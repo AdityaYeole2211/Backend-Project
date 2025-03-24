@@ -9,4 +9,10 @@ app.use(cors({
     credentials : true
     
 }))
+
+//data will come from different ways , telling app that only 
+app.use(express.json({limit : "16kb"})) // data from json 
+app.use(express.urlencoded({limit : "16kb"}))//data from urls
+app.use(express.static("public")) //save certain files on server only (in public folder)
+app.use(cookieParser())
 export {app}
