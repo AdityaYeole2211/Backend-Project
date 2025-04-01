@@ -9,6 +9,8 @@ const generateAccessAndRefreshTokens = async(userId) => {
     try {
         const user = await User.findById(userId)
         const accessToken = user.generateAccessToken()
+        // console.log("\n access in fn : ", accessToken)
+        // console.log("\n refresh in fn : ", accessToken)
         const refreshToken = user.generateRefreshToken()
         //save refresh token in database 
         user.refreshToken = refreshToken
@@ -51,6 +53,7 @@ const registerUser = asyncHandler( async (req, res) => {
         throw new ApiError(409, "Username or email already exists")
     }
     // console.log("\n \n req.files :  \n", req.files)
+    // console.log("\n \n req.files.avatar :  \n", req.files?.avatar[0])
     
     //get image files, check for avatar (req field)
     const avatarLocalPath = req.files?.avatar[0]?.path
@@ -126,6 +129,8 @@ const loginUser = asyncHandler(async (req,res) => {
 
     //if password also correct , generate tokens 
     const {accessToken, refreshToken} = await generateAccessAndRefreshTokens(user._id)
+    // console.log("\n access : ",  accessToken)
+    // console.log("\n refresh : ",  refreshToken)
 
     //the user we have here is different instance of user and the user we updated
     //in above method is different instance , so we need to update it 
