@@ -323,7 +323,7 @@ const updateUserAvatar = asyncHandler(async(req,res) => {
     )
 })
 
-const updateUserCoverImage =- asyncHandler(async(req, res) => {
+const updateUserCoverImage = asyncHandler(async(req, res) => {
     const coverImageLocalPath = req.file?.path
     if(!coverImageLocalPath){
         throw new ApiError(400, "Cover Image file is missing.")
@@ -350,6 +350,86 @@ const updateUserCoverImage =- asyncHandler(async(req, res) => {
         new ApiResponse(200, user, "Cover image update successfull.")
     )
 })
+
+const getUserChannelProfile = asyncHandler(async(req,res) => {
+    const {username} = req.params // will get the channel name in url
+
+    if(!username?.trim()){
+        throw new ApiError(400, "Username is missing.")
+    }
+    //aggregation pipeline , 
+    //can do find user by User.find method also , but will use $match of aggregation pipeline 
+    //to match username 
+
+    const channel = await User.aggregate([
+        {
+            $match : {
+                username : username?.toLowerCase()
+            }
+        },
+        {
+            //finding subscribers
+            $lookup : {
+                from : "subscriptions",
+                localField : "_id",
+                foreignField : "channel",
+                as : "subscribers"
+            }
+        },
+        {
+            $lookup : {
+                from : "subscriptions",
+                localField: "_id",
+                foreignField : "subscriber",
+                as : "subscribedTo"
+
+            }
+        },
+        {
+            $addFields : {
+                subscriberCount : {
+                    $size : "$subscribers" //as subscriber is field now, use $
+                },
+                channelsSubscribedToCount : {
+                    $size : "$subscribedTo"
+                },
+                isSubscribed : {
+                    $cond : {
+                        if : {$in : [req.user?._id, "$subscribers.subscriber"]},
+                        then : true,
+                        else: false
+                    }
+                }
+            }
+        },
+        {
+            $project : {
+                username : 1,
+                fullname : 1,
+                email : 1,
+                avatar : 1,
+                coverImage : 1,
+                subscriberCount: 1,
+                channelsSubscribedToCount : 1,
+                isSubscribed : 1
+            }
+        }
+    ])
+
+    console.log("\n \n Aggregate pipeline channel output : \n", channel)
+
+    if(!channel?.length){
+        throw new ApiError(404, "Channel does not exist.")
+    }
+    //channel is an array , has 1 element, which is an iobject which has all fields mentioned 
+    //in project query 
+
+    return res 
+    .status(200)
+    .json(
+        new ApiResponse(200, channel[0], "Channel info fetched successfully.")
+    )
+})
 export {
     registerUser,
     loginUser,
@@ -359,5 +439,6 @@ export {
     getCurrentUser, 
     updateAccountDetails,
     updateUserAvatar,
-    updateUserCoverImage
+    updateUserCoverImage,
+    getUserChannelProfile
 }
