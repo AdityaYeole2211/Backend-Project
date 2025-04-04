@@ -30,19 +30,19 @@ router.route('/register').post(
         }
     ]),
     registerUser
-)
+) //done
 
-router.route('/login').post(loginUser)
+router.route('/login').post(loginUser)//done
 
 //secured routes -> login needed
-router.route('/logout').post(verifyJWT, logoutUser) //injecting middleware 
-router.route('/refresh-token').post(refreshAccessToken)
-router.route('/change-password').post(verifyJWT, changeCurrentPassword)
-router.route('/current-user').get(verifyJWT, getCurrentUser)
-router.route('/update-account').patch(verifyJWT, updateAccountDetails)
+router.route('/logout').post(verifyJWT, logoutUser) //injecting middleware //done
+router.route('/refresh-token').post(refreshAccessToken)//done
+router.route('/change-password').post(upload.none(), verifyJWT, changeCurrentPassword)//done
+router.route('/current-user').get(verifyJWT, getCurrentUser) //done
+router.route('/update-account').patch(verifyJWT, updateAccountDetails)//done
 
-router.route('/update-avatar').patch(verifyJWT, upload.single("avatar"), updateUserAvatar)
-router.route('/update-coverImage').patch(verifyJWT, upload.single("coverImage"), updateUserCoverImage)
+router.route('/update-avatar').patch(verifyJWT, upload.single("avatar"), updateUserAvatar)//done
+router.route('/update-coverImage').patch(verifyJWT, upload.single("coverImage"), updateUserCoverImage)//done
 router.route('/c/:username').get(verifyJWT, getUserChannelProfile)
 router.route('/watch-history').get(verifyJWT, getWatchHistory)
 

@@ -107,6 +107,12 @@ const registerUser = asyncHandler( async (req, res) => {
 const loginUser = asyncHandler(async (req,res) => {
     const {username, email ,password} = req.body
 
+    // console.log(req.body)
+
+    // console.log("\n username : ", username)
+    // console.log("\n email : ", email)
+    // console.log("\n password : ", password)
+
     if(!(username || email)){
         //atleast one is required 
         throw new ApiError(400, "Username or email required.")
@@ -247,10 +253,16 @@ const refreshAccessToken = asyncHandler(async(req, res) => {
 const changeCurrentPassword= asyncHandler(async(req,res) => {
     //take user given fields
     const {oldPassword, newPassword} = req.body
+    // console.log("\n req.body : ", req.body)
+    // console.log(oldPassword)
+    // console.log(newPassword)
+    // console.log("\n req.user : \n", req.user)
+    // console.log("\n id : ", req.user?._id)
 
     //since verify jwt middleware is executed before this , user ->  req.user
 
     const user = await User.findById(req.user?._id)
+    // console.log(user)
 
     const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
 
