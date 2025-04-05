@@ -7,6 +7,12 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 
 const createTweet = asyncHandler(async (req, res) => {
     //TODO: create tweet
+    //steps : 
+    // 1. get tweet data from frontend, user data from req 
+    // 2 . validation -> content empty or not 
+    // 3. create new tweet object 
+    // 4. check if tweet created or not 
+    //5. return response 
 })
 
 const getUserTweets = asyncHandler(async (req, res) => {
